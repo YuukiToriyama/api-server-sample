@@ -1,36 +1,22 @@
 /* index.js */
 
 const express = require("express");
+const bodyParser = require("body-parser");
+
+
+// 設定
 const app = express();
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
+app.use(bodyParser.json());
 
-// ルートディレクトリ
-app.get("/", (req, res) => {
-	res.send("api-server-sample: Hello, world");
-})
+const port = process.env.PORT || 3000;
 
-// /api/v1/test
-app.get("/api/v1/test", (req, res) => {
-	const members = {
-		"tanaka": [],
-		"suzuki": [],
-		"yasuda": []
-	}
+// GET http://localhost:3000/api/v1/
+const v1 = require("./routes/v1/index.js");
+app.use('/api/v1', v1);
 
-	let result;
-	if (req.query.name) {
-		let name = req.query.name;
-		if (name in members) {
-			result = members[name];
-		} else {
-			result = {"error": "no such member"}
-		}
-	} else {
-		result = {"error": "invalid parameter"}
-	}
-
-	res.json(result);
-})
-
-app.listen(3000, () => {
-	console.log("Listening on port 3000");
-})
+// 起動
+app.listen(port);
+console.log("listen on port " + port);
